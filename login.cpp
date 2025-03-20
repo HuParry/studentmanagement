@@ -47,7 +47,7 @@ void Login::connect2db()
 
 void Login::createTable()
 {
-    QString sql = "CREATE TABLE login(username TEXT NOT NULL,password TEXT NOT NULL);";
+    QString sql = "CREATE TABLE IF NOT EXISTS login(username TEXT NOT NULL,password TEXT NOT NULL);";
     QSqlQuery sq;
     if(sq.exec(sql) && insertRow())
     {

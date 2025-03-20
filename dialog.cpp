@@ -41,8 +41,8 @@ void Dialog::connect2DB()
 
 void Dialog::createTable()
 {
-    QString sql = "CREATE TABLE student(id TEXT,name TEXT NOT NULL,type TEXT,subjectname TEXT,classnum TEXT,date TEXT);";
-    QSqlQuery  sq;
+    QString sql = "CREATE TABLE IF NOT EXISTS student(id TEXT,name TEXT NOT NULL,type TEXT,subjectname TEXT,classnum TEXT,date DATE);";
+    QSqlQuery sq;
     if(sq.exec(sql))
     {
         qDebug() << "建表成功！";
@@ -220,7 +220,7 @@ void Dialog::on_pushButton_open_clicked()
 
     ui->textBrowser->clear();
     QTextStream astream(&output);
-    astream.setAutoDetectUnicode(true);  //自动检测Unicode,从而便于显示汉字
+    astream.setCodec("utf-8");
 
     QString sql = "INSERT INTO student VALUES(?,?,?,?,?,?)";
     QSqlQuery sq;

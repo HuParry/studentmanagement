@@ -16,7 +16,7 @@ query::query(int cho, QWidget *parent) :
     ui->dateEdit_2->setCalendarPopup(true);
 }
 
-Time::Time(QVector< QPair<id_name_date, uint> > &vec, QWidget *parent):
+Time::Time(QVector< Id_name > &vec, QWidget *parent):
     QDialog(parent),
     ui(new Ui::Time)
 {
@@ -29,13 +29,13 @@ Time::Time(QVector< QPair<id_name_date, uint> > &vec, QWidget *parent):
    ui->textBrowser->append(content);
    for(int i = 0; i < vec.size(); i ++)
    {
-       QString content = Fillin(vec[i].first.id, 15, ' ')
-               +Fillin(vec[i].first.name, 12, ' ')+ "  " + QString::number(vec[i].second);
+       QString content = Fillin(vec[i].id, 15, ' ')
+               +Fillin(vec[i].name, 12, ' ')+ "  " + QString::number(vec[i].num);
        ui->textBrowser->append(content);
    }
 }
 
-Time::Time(QVector< QPair<subjectname_date, uint> > &vec, QWidget *parent):
+Time::Time(QVector< Subjectname > &vec, QWidget *parent):
     QDialog(parent),
     ui(new Ui::Time)
 {
@@ -49,8 +49,8 @@ Time::Time(QVector< QPair<subjectname_date, uint> > &vec, QWidget *parent):
    ui->textBrowser->append(content);
    for(int i = 0; i < vec.size(); i ++)
    {
-       QString content = Fillin(vec[i].first.subjectname, 24, ' ')
-               + "  " + QString::number(vec[i].second);
+       QString content = Fillin(vec[i].subjectname, 24, ' ')
+               + "  " + QString::number(vec[i].num);
        ui->textBrowser->append(content);
    }
 }
@@ -88,48 +88,33 @@ void query::query_1_operation()
         return;
     }
 
-    QString sql = "SELECT * FROM student";
+    QString sql = "SELECT id, name, COUNT(id) as num FROM (select * from student where type=?) where date between ? and ? group by id order by num desc";
     QSqlQuery sq;
     sq.prepare(sql);
+    sq.addBindValue(QString("旷课"));
+    sq.addBindValue(left.toString("yyyy-MM-dd"));
+    sq.addBindValue(right.toString("yyyy-MM-dd"));
+
     if(sq.exec())
     {
         if(sq.next())
         {
-            QVector< QPair<id_name_date, uint> > vec;
-            QMap<id_name_date, uint> mp;  //存储查询到的学生信息的容器
+            QVector< Id_name > vec; //存储查询到的学生信息的容器
             QString id, name;
+            int num;
             do
             {
-                QDate now = QDate::fromString(sq.value("date").toString(), "yyyy/MM/dd");
-                QString type = sq.value("type").toString();
-                if(left <= now && now <= right && type == QString("旷课"))
-                {
-                    id = sq.value(0).toString();
-                    name = sq.value("name").toString();
-                    id_name_date index = {id, name};
-                    mp[index] ++;
-                }
+                id = sq.value("id").toString();
+                name = sq.value("name").toString();
+                num = sq.value("num").toInt();
+                vec.append(Id_name(id, name, num));
             }while(sq.next());
 
-            if(mp.empty())
+            if(vec.empty())
             {
                 QMessageBox::warning(this, "提示", "未查找到该时间段的旷课学生");
                 return;
             }
-
-            for(QMap<id_name_date, uint>::iterator it = mp.begin(); it != mp.end(); ++ it)
-            {
-                QPair<id_name_date, uint> add(it.key(), it.value());
-                vec.append(add);
-            }
-
-            auto cmp = [](QPair<id_name_date, uint> &a, QPair<id_name_date, uint> &b) {
-                if(a.second == b.second)
-                    return a.first < b.first;
-                return a.second > b.second;
-            };       //自定义排序规则
-
-            qSort(vec.begin(), vec.end(), cmp);
 
             Time *que = new Time(vec, this);
             que->setWindowModality(Qt::ApplicationModal);
@@ -157,48 +142,32 @@ void query::query_2_operation()
         return;
     }
 
-    QString sql = "SELECT * FROM student";
+    QString sql = "SELECT subjectname, COUNT(id) as num FROM (select * from student where type=?) where date between ? and ? group by id order by num desc";
     QSqlQuery sq;
     sq.prepare(sql);
+    sq.addBindValue(QString("旷课"));
+    sq.addBindValue(left.toString("yyyy-MM-dd"));
+    sq.addBindValue(right.toString("yyyy-MM-dd"));
+
     if(sq.exec())
     {
         if(sq.next())
         {
-            QVector< QPair<subjectname_date, uint> > vec;
-            QMap<subjectname_date, uint> mp;  //存储查询到的课程信息的容器
+            QVector< Subjectname > vec; //存储查询到的课程信息的容器
             QString subjectname;
+            int num;
             do
             {
-                QDate now = QDate::fromString(sq.value("date").toString(), "yyyy/MM/dd");
-                QString type = sq.value("type").toString();
-                if(left <= now && now <= right && type == QString("旷课"))
-                {
-                    //id = sq.value(0).toString();
-                    subjectname = sq.value("subjectname").toString();
-                    subjectname_date index = {subjectname};
-                    mp[index] ++;
-                }
+                subjectname = sq.value("subjectname").toString();
+                num = sq.value("num").toInt();
+                vec.append(Subjectname(subjectname, num));
             }while(sq.next());
 
-            if(mp.empty())
+            if(vec.empty())
             {
                 QMessageBox::warning(this, "提示", "未查找到该时间段的旷课课程");
                 return;
             }
-
-            for(QMap<subjectname_date, uint>::iterator it = mp.begin(); it != mp.end(); ++ it)
-            {
-                QPair<subjectname_date, uint> add(it.key(), it.value());
-                vec.append(add);
-            }
-
-            auto cmp = [](QPair<subjectname_date, uint> &a, QPair<subjectname_date, uint> &b) {
-                if(a.second == b.second)
-                    return a.first < b.first;
-                return a.second > b.second;
-            };       //自定义排序规则
-
-            qSort(vec.begin(), vec.end(), cmp);
 
             Time *que = new Time(vec, this);
             que->setWindowModality(Qt::ApplicationModal);

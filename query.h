@@ -14,42 +14,21 @@ namespace Ui {
     class Time;
 }
 class Stu;
-struct id_name_date{  //学号和姓名的结构体
+
+class Id_name {
 public:
     QString id, name;
-    bool operator < (const id_name_date &a) const {
-        if(id == a.id) {
-            return name < a.name;
-        }
-        return id < a.id;
-    }
-    bool operator > (const id_name_date &a) const {
-        if(id == a.id) {
-            return name > a.name;
-        }
-        return id > a.id;
-    }
-    bool operator == (const id_name_date &a) const {
-        if(id == a.id && name == a.name)
-            return true;
-        return false;
-    }
+    int num;
+    Id_name() = default;
+    Id_name(QString _id, QString _name, int _num):id(_id), name(_name), num(_num) {}
 };
 
-struct subjectname_date{   //课程名字的结构体
+class Subjectname {
 public:
     QString subjectname;
-    bool operator < (const subjectname_date &a) const {
-        return subjectname < a.subjectname;
-    }
-    bool operator > (const subjectname_date &a) const {
-        return subjectname > a.subjectname;
-    }
-    bool operator == (const subjectname_date &a) const {
-        if(subjectname == a.subjectname)
-            return true;
-        return false;
-    }
+    int num;
+    Subjectname() = default;
+    Subjectname(QString _subjectname, int _num): subjectname(_subjectname), num(_num) {}
 };
 
 class query : public QDialog
@@ -75,8 +54,8 @@ class Time : public QDialog
 {
     Q_OBJECT
 public:
-    explicit Time(QVector< QPair<id_name_date, uint> > &vec, QWidget *parent = 0);
-    explicit Time(QVector< QPair<subjectname_date, uint> > &vec, QWidget *parent = 0);
+    explicit Time(QVector< Id_name > &vec, QWidget *parent = 0);
+    explicit Time(QVector< Subjectname > &vec, QWidget *parent = 0);
     ~Time();
 private:
     Ui::Time *ui;

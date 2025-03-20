@@ -40,7 +40,7 @@ void add_Student::insertRow()
         QString type = ui->comboBox->currentText();
         QString subjectname = ui->comboBox_2->currentText();
         QString classnum = ui->comboBox_3->currentText();
-        QString data = ui->dateEdit->text();
+        QDate date = ui->dateEdit->date();
 
         QString sql = "INSERT INTO student VALUES(?,?,?,?,?,?)";
         QSqlQuery sq;
@@ -53,7 +53,7 @@ void add_Student::insertRow()
         sq.addBindValue(type);
         sq.addBindValue(subjectname);
         sq.addBindValue(classnum);
-        sq.addBindValue(data);
+        sq.addBindValue(date);
 
         if(sq.exec())
         {

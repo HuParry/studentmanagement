@@ -240,7 +240,7 @@ void Dialog::on_pushButton_open_clicked()
             sq.addBindValue(list[2]);
             sq.addBindValue(list[3]);
             sq.addBindValue(list[4]);
-            sq.addBindValue(list[5]);
+            sq.addBindValue(QDate::fromString(list[5], "yyyy/MM/dd"));
 
             if(sq.exec())
             {

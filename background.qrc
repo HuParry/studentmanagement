@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/new/back">
+        <file>客户管理系统.png</file>
+        <file>icon/查询.png</file>
+        <file>icon/打开.png</file>
+        <file>icon/导出.png</file>
+        <file>icon/删除用户联系人.png</file>
+        <file>icon/修改.png</file>
+        <file>icon/关闭 (1).png</file>
+        <file>University.jpg</file>
+        <file>icon/时间(1).png</file>
+        <file>icon/时间(2).png</file>
+        <file>icon/添加用户.png</file>
+        <file>university2.bmp</file>
+    </qresource>
+</RCC>
